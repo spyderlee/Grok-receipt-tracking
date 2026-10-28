@@ -1,0 +1,62 @@
+[Unit]
+Description=Maid Receipt Telegram Bot (HKD float tracker)
+After=network-online.target mysql.service mariadb.service
+Wants=network-online.target
+# In-process backoff waits out network/MySQL at boot (N3). systemd start-limit is a
+# secondary backstop (bot-deploy example values); exits 2 and 4 are never restarted.
+StartLimitIntervalSec=600
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=bot-maid-receipt
+Group=bot-maid-receipt
+WorkingDirectory=/opt/bots/maid-receipt
+EnvironmentFile=/etc/bots/maid-receipt/env
+Environment=PYTHONUNBUFFERED=1
+Environment=BOT_TIMEZONE=Asia/Hong_Kong
+Environment=TZ=Asia/Hong_Kong
+Environment=BOT_LOCK_FILE=/var/lib/bots/maid-receipt/bot.lock
+Environment=RECEIPT_PHOTO_DIR=/var/lib/bots/maid-receipt/photos
+Environment=MYSQL_UNIX_SOCKET=/run/mysqld/mysqld.sock
+Environment=MYSQL_USER=bot-maid-receipt
+Environment=MYSQL_DATABASE=bot_maid_receipt
+ExecStart=/opt/bots/maid-receipt/venv/bin/python /opt/bots/maid-receipt/main.py
+Restart=on-failure
+RestartSec=15
+RestartPreventExitStatus=2 4
+
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/bots/maid-receipt
+StateDirectory=bots/maid-receipt
+StateDirectoryMode=0750
+UMask=0027
+CapabilityBoundingSet=
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+ProtectClock=true
+ProtectHostname=true
+ProtectProc=invisible
+RestrictSUIDSGID=true
+RestrictNamespaces=true
+RestrictRealtime=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+RemoveIPC=true
+KeyringMode=private
+PrivateUsers=true
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallFilter=~@privileged @resources
+SystemCallErrorNumber=EPERM
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+DevicePolicy=closed
+
+[Install]
+WantedBy=multi-user.target
