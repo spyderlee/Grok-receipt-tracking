@@ -1,0 +1,10 @@
+# Runtime privileges for MySQL user 'bot-maid-receipt'@'localhost' on database
+# bot_maid_receipt (bot-deploy applies these after REVOKE ALL on every migrate).
+# Format: <table|*> <PRIV>[,PRIV...]  with PRIV in SELECT, INSERT, UPDATE, DELETE.
+receipts       SELECT,INSERT,UPDATE
+float_balance  SELECT,UPDATE
+topups         SELECT,INSERT
+adjustments    SELECT,INSERT
+audit_log      SELECT,INSERT
+edit_sessions  SELECT,INSERT,UPDATE,DELETE
+schema_version SELECT
