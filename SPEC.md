@@ -201,13 +201,16 @@ Per-user command menus are registered at startup (admin menu, maid menu).
   redacts the token, the DB password, the vision key and any `bot<id>:<secret>` shape from every
   record **including tracebacks** (H1).
 * Telegram user-ID whitelist on every handler and callback; the maid can only act on her own receipts.
-* Least-privilege MySQL user bound to `localhost` and `127.0.0.1` (L8); MySQL listens on 127.0.0.1 only.
+* Least-privilege runtime MySQL user `bot-maid-receipt` via unix_socket (no `MYSQL_PASSWORD` when
+  `MYSQL_UNIX_SOCKET` is set). Migrator `botmig-maid-receipt` applies `migrations/001_initial.sql`;
+  runtime grants are `deploy/db-grants`. MySQL listens on 127.0.0.1 only (L8).
 * **Long polling** – outbound HTTPS only; no webhook, no inbound port. The server is administered
   over Tailscale SSH.
 * systemd sandboxing (L7): dedicated `bot-maid-receipt` user, `ProtectSystem=strict`, `ProtectHome`,
   `NoNewPrivileges`, empty `CapabilityBoundingSet`, `SystemCallFilter=@system-service`,
   `ProtectClock/Hostname/KernelLogs`, `ProtectProc=invisible`, `RestrictNamespaces/Realtime`,
-  `MemoryDenyWriteExecute`, `PrivateUsers`, write access limited to `/var/lib/maid-receipt-bot`;
+  `MemoryDenyWriteExecute`, `PrivateUsers`, write access limited to `/var/lib/bots/maid-receipt`
+  (`StateDirectory=bots/maid-receipt`; photos in `…/photos`);
   `systemd-analyze security` ≈ 1.x-2.0.
 * Backups (M6): verified dump + photos, checksums, off-host copy, failure alert, restore drill.
 * All SQL is parameterised; the only dynamic column name comes from a fixed whitelist.

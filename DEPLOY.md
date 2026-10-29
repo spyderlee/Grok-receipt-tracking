@@ -9,13 +9,14 @@ we do **not** take Hermes port **3457** (`receipt-webhook`) on nlsai.
 | Item | Path / name |
 |---|---|
 | Code | `/opt/bots/maid-receipt` (root:bot-maid-receipt) |
-| Unit | `bot-maid-receipt.service` (`deploy/bot-maid-receipt.service`) |
+| Unit | `bot-maid-receipt.service` → `/etc/systemd/system/bot-maid-receipt.service` (source `deploy/bot-maid-receipt.service`) |
 | Env | `/etc/bots/maid-receipt/env` (root:root 0600) |
 | State / photos | `/var/lib/bots/maid-receipt` (`StateDirectory=bots/maid-receipt`), photos in `…/photos` |
 | OS user | `bot-maid-receipt` |
 | DB | `bot_maid_receipt` |
-| Runtime DB user | `'bot-maid-receipt'@'localhost'` via **unix_socket** (no password) |
-| Migrator | `botmig-maid-receipt` (ALL on the DB; applies `migrations/*.sql`) |
+| Runtime DB user | `bot-maid-receipt` via **unix_socket** (no `MYSQL_PASSWORD` when `MYSQL_UNIX_SOCKET` is set) |
+| Migrator | `botmig-maid-receipt` (ALL on the DB; applies `migrations/001_initial.sql`) |
+| Grants | `deploy/db-grants` |
 
 Do **not** introduce Hermes paths, ports, venv, or `HERMES_HOME`. Do not touch
 `telegram-receipt-bot.service` or `receipt-webhook.service` unless Albert asks.
@@ -79,7 +80,7 @@ sudo apt install -y python3 python3-venv python3-pip tesseract-ocr unzip
 # optional Chinese OCR: tesseract-ocr-chi-tra  then OCR_LANG=eng+chi_tra
 sudo useradd --system --home /opt/bots/maid-receipt --shell /usr/sbin/nologin bot-maid-receipt
 sudo mkdir -p /opt/bots/maid-receipt
-sudo unzip maid-receipt-bot.zip -d /tmp && sudo cp -r /tmp/maid-receipt-bot/. /opt/bots/maid-receipt/
+sudo unzip maid-receipt.zip -d /tmp && sudo cp -r /tmp/maid-receipt/. /opt/bots/maid-receipt/
 sudo python3 -m venv /opt/bots/maid-receipt/venv
 sudo /opt/bots/maid-receipt/venv/bin/pip install -r /opt/bots/maid-receipt/requirements.txt
 sudo chown -R root:bot-maid-receipt /opt/bots/maid-receipt && sudo chmod -R o-rwx /opt/bots/maid-receipt

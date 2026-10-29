@@ -18,12 +18,16 @@ sudo apt install -y python3-venv tesseract-ocr        # plus a local MySQL/Maria
 python3 -m venv venv && venv/bin/pip install -r requirements.txt
 sudo mysql -e "CREATE DATABASE bot_maid_receipt CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
 sudo mysql bot_maid_receipt < migrations/001_initial.sql
-sudo mysql < deploy/db-grants                # after editing the password in it
-cp .env.example .env && chmod 600 .env && $EDITOR .env  # token, DB password, both user IDs
+cp .env.example .env && chmod 600 .env && $EDITOR .env  # token and both Telegram IDs
 RECEIPT_PHOTO_DIR=./photos venv/bin/python main.py
 ```
 `.env` in the working directory is loaded automatically (override path with `MAIDBOT_ENV_FILE`);
-real environment variables take precedence.
+real environment variables take precedence. On the office server the runtime MySQL user is
+`bot-maid-receipt` on database `bot_maid_receipt`, via unix_socket (`MYSQL_UNIX_SOCKET` set, no
+`MYSQL_PASSWORD`). `deploy/db-grants` is the privilege list `bot-deploy` applies (table
+privileges only). Schema entry is `migrations/001_initial.sql`. For a local TCP
+login, comment out `MYSQL_UNIX_SOCKET` and set `MYSQL_HOST`, `MYSQL_PORT`, `MYSQL_USER`, and
+`MYSQL_PASSWORD` (at least 12 characters).
 
 ## Tests
 ```bash
