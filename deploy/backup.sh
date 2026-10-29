@@ -2,7 +2,7 @@
 # Nightly backup of the ledger DB + receipt photos (audit M6).
 #
 # Run as root from cron, e.g. (/etc/cron.d/bot-maid-receipt):
-#   15 3 * * * root /opt/bots/maid-receipt/deploy/backup.sh >> /var/log/maid-receipt-bot-backup.log 2>&1
+#   15 3 * * * root /opt/bots/maid-receipt/deploy/backup.sh >> /var/log/bot-maid-receipt-backup.log 2>&1
 #
 # Settings (environment, or /etc/bots/maid-receipt/backup.env which is sourced if present):
 #   DB_NAME          database to dump                      (default bot_maid_receipt)
